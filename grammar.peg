@@ -23,7 +23,14 @@ svg_path
   = wsp* data:moveTo_drawTo_commandGroups? wsp*
   {
     if (!data) return [];
-    for (var cmds=[],i=0;i<data.length;i++) cmds=cmds.concat.apply(cmds,data[i]);
+    //-->
+    // for (var cmds=[],i=0;i<data.length;i++) cmds=cmds.concat.apply(cmds,data[i]);
+    //--
+    // jw.yi@nosquest.com 2018-02-19 : Fixed "RangeError: Maximum call stack size exceeded" for big path arrays
+    for (var cmds = [], i = 0; i < data.length; ++i) {
+      data[i].forEach(function (d) { cmds.push.apply(cmds, d); });
+    }
+    //<--
     var first=cmds[0];
     if (first && first.code=='m'){ // Per spec, first moveto is never relative
       delete first.relative;
